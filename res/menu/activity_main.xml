@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+       <item android:id="@+id/menu_twitter" android:title="@string/menu_twitter"
+            android:showAsAction="ifRoom|withText" ></item>
+    <item android:id="@+id/menu_saved" android:title="@string/menu_saved"
+         android:showAsAction="ifRoom|withText" ></item>
+
+
+</menu>
