@@ -13,5 +13,10 @@
   	<string name="menu_search_hint">type a tag</string>
     <string name="menu_find">Find</string>
     <string name="menu_saved">Saved</string>
+    
+    <string name="NAME">NAME</string>
+    <string name="DATE">DATE</string>
+    <string name="TWEET">TWEET</string>
+    
 
 </resources>

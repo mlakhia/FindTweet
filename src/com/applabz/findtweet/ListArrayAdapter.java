@@ -1,11 +1,14 @@
 package com.applabz.findtweet;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.ListActivity;
 import android.content.Context;
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 @SuppressWarnings("unused")
-public class ListArrayAdapter extends ArrayAdapter<Tweet> implements LoaderInterface {
+public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
+	
+	/**
+	 * The android Handler to provide UIThread operations on the update method.
+	 */
+	private Handler handler;
 	
 	private Context context;
 	private int layoutResourceId;	
@@ -28,6 +36,8 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements LoaderInter
 		this.context = context;
 		this.layoutResourceId = layoutResourceId;
 		this.tweets = tweets;
+
+		handler = new Handler();
 		
 		dataSetObservable = new DataSetObservable();
 		observers = new ArrayList<DataSetObserver>();
@@ -67,4 +77,14 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements LoaderInter
         return dataSetObservable;
     }
 
+    @Override
+	public void update(Observable observable, Object data) {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+			}
+		});
+	}
+    
 }

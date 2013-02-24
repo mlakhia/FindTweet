@@ -31,33 +31,23 @@ public class MainActivity extends Activity {
 	private TwitterSource twitter;
 	private TweetDbSource saved;
 	
-	private static Context context;
+	static Context context;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MainActivity.context = getApplicationContext();
+		setContentView(R.layout.activity_main);
 		
 		ActionBar actionBar = getActionBar();
 	    //actionBar.setDisplayHomeAsUpEnabled(true);
 		
-		MainActivity.context = getApplicationContext();
-		
-		setContentView(R.layout.activity_main);
-		
-        TweetDbSource db = new TweetDbSource(this);
-        
+		// start db
+        TweetDbSource db = new TweetDbSource(this);        
         
         //testDB(db);
 	}
-	/*
-	public static Context getAppContext() {
-        return MainActivity.context;
-    }
 	
-	public static void makeToast(String string){		
-		Toast.makeText(getAppContext(), string, Toast.LENGTH_LONG).show();
-	}*/
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -72,16 +62,6 @@ public class MainActivity extends Activity {
 	    
 		return true;//super.onCreateOptionsMenu(menu);
 		//return true;
-	}	
-	
-	public void goHome(){
-		Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-	}
-	
-	public void goSearch(){
-		// before sending intent
 	}
 	
 	@Override
@@ -100,6 +80,16 @@ public class MainActivity extends Activity {
 				return super.onOptionsItemSelected(item);
 		}
 	}	
+	
+	public void goHome(){
+		Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+	}
+	
+	public void goSearch(){
+		// before sending intent
+	}
 
 	/*
 	 * Present the user with a simple dialog to enter search string

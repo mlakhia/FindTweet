@@ -256,8 +256,8 @@ public class TwitterSource {
 									tweetRaw.getString("text"),
 									dateFormatter.parse(tweetRaw.getString("created_at"))
 							        );
-				tweets.put(t.getTweetId(), t);
-				count++;
+					tweets.put(t.getTweetId(), t);
+					count++;
 				} catch (ParseException e) {
 					Log.d("TwitterSource", "Skipping tweet couldn't parse date: " + e.getMessage());
 				} 
@@ -281,6 +281,5 @@ public class TwitterSource {
 		int i=0;
 		for(Tweet t : list)
 			ids[i++] = t.getTweetId();
-	}
-	
+	}	
 }

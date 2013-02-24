@@ -1,29 +1,27 @@
 package com.applabz.findtweet;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Comparator;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
-import android.database.DataSetObservable;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 public class SearchActivity extends MainActivity {
+
+	private static Context context;
 
 	private String searchString = null;
 	private ProgressDialog progressDialog;
@@ -35,6 +33,7 @@ public class SearchActivity extends MainActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	context = this;
     	setContentView(R.layout.activity_search);
     	handleIntent(getIntent());
     	
@@ -42,14 +41,48 @@ public class SearchActivity extends MainActivity {
 	    actionBar.setDisplayHomeAsUpEnabled(true); // creates back button out of icon
 
 	    progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
-		
+			    
+	    class TweetComparator implements Comparator<Tweet> {
+	    	public int compare(Tweet lhs, Tweet rhs) {
+	    	    if (lhs.getTweetId() == rhs.getTweetId()) {
+	    	      return 0;
+	    	    } else {
+	    	      return lhs.getTweetId() < rhs.getTweetId() ? -1 : 1;
+	    	    }
+	    	}
+	    }
+	    
+	    TS = new TwitterSource(new TweetComparator());	    
+	    
 	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, new ArrayList<Tweet>() );		
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);
+		
+        listView.setTextFilterEnabled(true); // ???
+        
+        listView.setOnItemClickListener( new OnItemClickListener() {
+
+			public void onItemClick(AdapterView parent, View v, int position, long id) {
+            	Log.v("", parent.toString());
+            	Log.v("", ""+position);
+            	Log.v("", v.toString());
+            	Log.v("", ""+id);
+            	
+            	Tweet tweet = (Tweet) listAdapter.getItem(position);            	
+            	
+            	TweetDbSource db = new TweetDbSource(MainActivity.context);   
+            	db.addTweet(tweet);            	
+
+            	Toast.makeText(context, "saved tweet!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
     
     public void onListItemClick(ListView l, View v, int position, long id) { 
-    	// call detail activity for clicked entry  
+    	Log.v("", l.toString());
+    	Log.v("", ""+position);
+    	Log.v("", v.toString());
+    	Log.v("", ""+id);
     }
 
     @Override
@@ -58,26 +91,18 @@ public class SearchActivity extends MainActivity {
         handleIntent(intent);
     }
     
-    @Override
-    public boolean onSearchRequested(){
-    	Log.d("","here");
-		return true;
-    	
-    }
-    
-    private void doSearch(String query) { 
-    	setSearchString(query);
-    	
-    	//TS = new TwitterSource(getSearchString(), new Tweet(null,null,null,null,null,null,null));
-        
-        Toast.makeText(this, getSearchString(), Toast.LENGTH_LONG).show(); //makeToast(query);      
-    	
-    }
-    
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
         	doSearch( intent.getStringExtra(SearchManager.QUERY) );        	      
         }
+    }
+    
+    private void doSearch(String query) { 
+    	setSearchString(query);
+    	TS.setSearchString(query);
+    	       
+        Toast.makeText(this, getSearchString()+" - started", Toast.LENGTH_LONG).show();
+    	
     }
     
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,16 +124,10 @@ public class SearchActivity extends MainActivity {
     }
     
     private String getSearchString() {
-		return searchString;
+		return this.searchString;
 	}
 
 	private void setSearchString(String searchString) {
 		this.searchString = searchString;
 	}
-
-	public void update(Observable observable, Object data) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
