@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-public class ListAdapter extends ListActivity {
+public class ListAdapter extends ListActivity implements LoaderInterface {
 
 	Context context;
 	int layoutResourceId;
@@ -54,6 +54,11 @@ public class ListAdapter extends ListActivity {
 	}
 	
 	*/
+
+
+	public void getView(int position, View convertView, ViewGroup parent) {
+		
+	}
 
 	public void unregisterDataSetObserver(DataSetObserver observer) {
 

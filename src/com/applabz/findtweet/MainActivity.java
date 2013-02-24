@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -73,15 +74,24 @@ public class MainActivity extends Activity {
 		//return true;
 	}	
 	
+	public void goHome(){
+		Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+	}
+	
+	public void goSearch(){
+		// before sending intent
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 			case android.R.id.home:
-				Intent intent = new Intent(this, MainActivity.class);
-	            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
-	            startActivity(intent);
+				goHome();
 				return true;
 			case R.id.menu_find:
+				goSearch();
 				return true;
 			case R.id.menu_saved:
 				//TODO
