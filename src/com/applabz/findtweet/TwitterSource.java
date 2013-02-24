@@ -1,4 +1,4 @@
-package ca.qc.johnabbott.cs603.asg2;
+package com.applabz.findtweet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import org.json.JSONArray;
@@ -45,7 +46,7 @@ public class TwitterSource {
 
 		
 	//TODO: android.text has a DateFormat.. might be better
-	public static DateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+	public static DateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 	
 	/* API 1.0 */
 	final private static String BASE_URL = "http://search.twitter.com/search.json";
@@ -78,7 +79,7 @@ public class TwitterSource {
 	}
 		
 	/**
-	 * Create a twitter source by supplying sa comparator. The comparator will order the IDs returned from {@link #getIds()}.
+	 * Create a twitter source by supplying a comparator. The comparator will order the IDs returned from {@link #getIds()}.
 	 * @param comparer   The comparator used to order tweets
 	 */
 	public TwitterSource(Comparator<Tweet> comparer) {

@@ -1,4 +1,4 @@
-package ca.qc.johnabbott.cs603.asg2;
+package com.applabz.findtweet;
 
 
 import java.text.DateFormat;

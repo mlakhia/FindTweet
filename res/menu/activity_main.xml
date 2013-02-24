@@ -1,9 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-       <item android:id="@+id/menu_twitter" android:title="@string/menu_twitter"
-            android:showAsAction="ifRoom|withText" ></item>
-    <item android:id="@+id/menu_saved" android:title="@string/menu_saved"
-         android:showAsAction="ifRoom|withText" ></item>
-
-
+    
+    <item android:id="@+id/menu_find"
+          android:title="@string/menu_find"
+          android:icon="@android:drawable/ic_menu_search"
+          android:showAsAction="ifRoom|collapseActionView"
+          android:actionViewClass="android.widget.SearchView" />
+    
+    <item android:id="@+id/menu_saved"
+          android:title="@string/menu_saved"
+          android:icon="@android:drawable/ic_menu_save"
+          android:showAsAction="always" >
+          
+    </item>
 </menu>
