@@ -1,5 +1,6 @@
 package com.applabz.findtweet;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -22,11 +23,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-public class SearchActivity extends MainActivity implements Observer {
+public class SearchActivity extends MainActivity {
 
 	private String searchString = null;
 	private ProgressDialog progressDialog;
-	
 	private ListAdapter listAdapter;
 	private ListView listView;
 	
@@ -39,16 +39,13 @@ public class SearchActivity extends MainActivity implements Observer {
     	handleIntent(getIntent());
     	
     	ActionBar actionBar = getActionBar();
-	    actionBar.setDisplayHomeAsUpEnabled(true);
-        
-	    progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
+	    actionBar.setDisplayHomeAsUpEnabled(true); // creates back button out of icon
 
-		/*
-		listAdapter = new ListAdapter(this, R.layout.tweet, null);		
+	    progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
 		
+	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, new ArrayList<Tweet>() );		
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);
-*/
     }
     
     public void onListItemClick(ListView l, View v, int position, long id) { 
@@ -109,7 +106,6 @@ public class SearchActivity extends MainActivity implements Observer {
 		this.searchString = searchString;
 	}
 
-	@Override
 	public void update(Observable observable, Object data) {
 		// TODO Auto-generated method stub
 		
