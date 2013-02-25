@@ -31,7 +31,7 @@ import java.util.Observer;
 public class MainActivity extends Activity implements Observer {
 
 	private TwitterSource twitter;
-	private TweetDbSource saved;
+	static TweetDbSource db;
 	
 	static Context context;
 	
@@ -45,9 +45,10 @@ public class MainActivity extends Activity implements Observer {
 	    //actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		// start db
-        TweetDbSource db = new TweetDbSource(this);        
+        db = new TweetDbSource(this);        
         
-        //testDB(db);
+        add3Tweets(); // to database
+        //testDB();
 	}
 	
 	@Override
@@ -161,10 +162,59 @@ public class MainActivity extends Activity implements Observer {
 			 .show();
 	}
 	
+	
+	
 	/*
 	 * Test the database 
 	 */
-	public void testDB(TweetDbSource db) throws ParseException{
+	public void add3Tweets() {
+		
+	    int count = db.size();
+	    
+	    try {
+			db.addTweet(new Tweet(
+					10, 
+					3211, 
+					"test user1", 
+					"test name1", 
+					"DAT TWEET #LULZ1", 
+					"20101216063056", 
+					0));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	    
+	    try {
+			db.addTweet(new Tweet(
+					11, 
+					3121, 
+					"test user2", 
+					"test name2", 
+					"DAT TWEET #LULZ2", 
+					"20111216063056", 
+					0));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	    
+	    try {
+			db.addTweet(new Tweet(
+					12, 
+					3211, 
+					"test user3", 
+					"test name3", 
+					"DAT TWEET #LULZ3", 
+					"20121216063056", 
+					0));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Test the database 
+	 */
+	public void testDB(){
 		
 		// Inserting Tweet
         Log.d("Insert: ", "Inserting ..");        

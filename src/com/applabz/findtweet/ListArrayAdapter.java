@@ -17,13 +17,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 @SuppressWarnings("unused")
-public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
-	
-	/**
-	 * The android Handler to provide UIThread operations on the update method.
-	 */
-	private Handler handler;
-	
+public class ListArrayAdapter extends ArrayAdapter<Tweet> {
+		
 	private Context context;
 	private int layoutResourceId;	
 	private ArrayList<Tweet> tweets;
@@ -36,8 +31,6 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
 		this.context = context;
 		this.layoutResourceId = layoutResourceId;
 		this.tweets = tweets;
-
-		handler = new Handler();
 		
 		dataSetObservable = new DataSetObservable();
 		observers = new ArrayList<DataSetObserver>();
@@ -108,15 +101,4 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
     protected DataSetObservable getDataSetObservable() {
         return dataSetObservable;
     }
-
-    @Override
-	public void update(Observable observable, Object data) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				notifyDataSetChanged();
-			}
-		});
-	}
-    
 }
