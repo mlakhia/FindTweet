@@ -2,6 +2,7 @@ package com.applabz.findtweet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Observable;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -58,7 +59,7 @@ public class SearchActivity extends MainActivity {
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);
 		
-        listView.setTextFilterEnabled(true); // ???
+        //listView.setTextFilterEnabled(true); // ???
         
         listView.setOnItemClickListener( new OnItemClickListener() {
 
@@ -100,9 +101,8 @@ public class SearchActivity extends MainActivity {
     private void doSearch(String query) { 
     	setSearchString(query);
     	TS.setSearchString(query);
-    	       
+
         Toast.makeText(this, getSearchString()+" - started", Toast.LENGTH_LONG).show();
-    	
     }
     
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -130,4 +130,17 @@ public class SearchActivity extends MainActivity {
 	private void setSearchString(String searchString) {
 		this.searchString = searchString;
 	}
+	/*
+	@Override
+	public void update(Observable observable, Object data) {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+				if(progressDialog != null){
+					progressDialog.dismiss();
+				}
+			}
+		});
+	}*/
 }

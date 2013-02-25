@@ -42,7 +42,7 @@ import android.util.Log;
  *	 TODO: more parameters for generating query (ex: result_type, rpp/count)
  *
  */
-public class TwitterSource {
+public class TwitterSource implements SourceInterface {
 
 		
 	//TODO: android.text has a DateFormat.. might be better
@@ -150,6 +150,15 @@ public class TwitterSource {
 	public Tweet getTweet(long id) {
 		return tweets.get(id);
 	}
+	
+	/** Get all tweets
+	 *
+	 * @return     All tweets
+	 */
+	@Override
+	public ArrayList<Tweet> getAllTweets() {
+		return new ArrayList<Tweet>(tweets.values());
+	}	
 
 	/* Asynchronous fetching of tweets from twitter.com */
 	private class FetchTweetsTask extends AsyncTask<Void, Void, Boolean> {
@@ -281,5 +290,5 @@ public class TwitterSource {
 		int i=0;
 		for(Tweet t : list)
 			ids[i++] = t.getTweetId();
-	}	
+	}
 }
