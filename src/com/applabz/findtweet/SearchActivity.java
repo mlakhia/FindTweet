@@ -1,9 +1,5 @@
 package com.applabz.findtweet;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Observable;
-
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -21,16 +17,6 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 public class SearchActivity extends MainActivity {
-	
-	class TweetComparator implements Comparator<Tweet> {
-    	public int compare(Tweet lhs, Tweet rhs) {
-    	    if (lhs.getTweetId() == rhs.getTweetId()) {
-    	      return 0;
-    	    } else {
-    	      return lhs.getTweetId() < rhs.getTweetId() ? -1 : 1;
-    	    }
-    	}
-    }
 
 	private static Context context;
 
@@ -39,7 +25,7 @@ public class SearchActivity extends MainActivity {
 	private ListAdapter listAdapter;
 	private ListView listView;
 	
-	private TwitterSource TS = new TwitterSource(new TweetComparator());
+	
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +44,7 @@ public class SearchActivity extends MainActivity {
 	    //listAdapter.unregisterDataSetObserver(observer);
 	    //listAdapter.registerDataSetObserver(observer);	    
 	    
-	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, this.TS.getAllTweets());
+	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, MainActivity.TS.getAllTweets());
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);
 		        

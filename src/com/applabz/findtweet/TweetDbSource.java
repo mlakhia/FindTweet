@@ -47,6 +47,55 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 				+ KEY_TW_CREATED + " TEXT," 
 				+ KEY_TW_RTCOUNT + " TEXT" + ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
+		
+		add3Tweets();
+	}
+	
+	/*
+	 * Test the database 
+	 */
+	public void add3Tweets() {
+		
+	    int count = size();
+	    
+	    try {
+			addTweet(new Tweet(
+					count++, 
+					3211, 
+					"test user1", 
+					"test name1", 
+					"DAT TWEET #LULZ1", 
+					"20101216063056", 
+					0));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	    
+	    try {
+			addTweet(new Tweet(
+					count++, 
+					3121, 
+					"test user2", 
+					"test name2", 
+					"DAT TWEET #LULZ2", 
+					"20111216063056", 
+					0));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	    
+	    try {
+			addTweet(new Tweet(
+					count++, 
+					3211, 
+					"test user3", 
+					"test name3", 
+					"DAT TWEET #LULZ3", 
+					"20121216063056", 
+					0));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Upgrade Database

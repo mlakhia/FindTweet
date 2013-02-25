@@ -29,9 +29,19 @@ import java.util.Observer;
 
 @SuppressWarnings("unused")
 public class MainActivity extends Activity implements Observer {
+	
+	class TweetComparator implements Comparator<Tweet> {
+    	public int compare(Tweet lhs, Tweet rhs) {
+    	    if (lhs.getTweetId() == rhs.getTweetId()) {
+    	      return 0;
+    	    } else {
+    	      return lhs.getTweetId() < rhs.getTweetId() ? -1 : 1;
+    	    }
+    	}
+    }
 
-	private TwitterSource twitter;
-	static TweetDbSource db;
+	protected static TweetDbSource db;
+	protected static TwitterSource TS;
 	
 	static Context context;
 	
@@ -45,9 +55,10 @@ public class MainActivity extends Activity implements Observer {
 	    //actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		// start db
+		TS = new TwitterSource("lol", new TweetComparator());
         db = new TweetDbSource(this);        
         
-        add3Tweets(); // to database
+        //add3Tweets(); // to database
         //testDB();
 	}
 	
@@ -164,52 +175,7 @@ public class MainActivity extends Activity implements Observer {
 	
 	
 	
-	/*
-	 * Test the database 
-	 */
-	public void add3Tweets() {
-		
-	    int count = db.size();
-	    
-	    try {
-			db.addTweet(new Tweet(
-					10, 
-					3211, 
-					"test user1", 
-					"test name1", 
-					"DAT TWEET #LULZ1", 
-					"20101216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	    
-	    try {
-			db.addTweet(new Tweet(
-					11, 
-					3121, 
-					"test user2", 
-					"test name2", 
-					"DAT TWEET #LULZ2", 
-					"20111216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	    
-	    try {
-			db.addTweet(new Tweet(
-					12, 
-					3211, 
-					"test user3", 
-					"test name3", 
-					"DAT TWEET #LULZ3", 
-					"20121216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	}
+	
 	
 	/*
 	 * Test the database 
@@ -278,7 +244,6 @@ public class MainActivity extends Activity implements Observer {
      * @param message - alert message
      * @param status - success/failure (used to set icon)
      * */
-    @SuppressWarnings("deprecation")
 	public void showAlertDialog(Context context, String title, String message, Boolean status) {    	
     	AlertDialog.Builder alert = new AlertDialog.Builder(this); 
     	alert.setTitle(title)
