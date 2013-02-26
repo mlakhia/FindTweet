@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +43,7 @@ import android.util.Log;
  *	 TODO: more parameters for generating query (ex: result_type, rpp/count)
  *
  */
-public class TwitterSource implements SourceInterface {
+public class TwitterSource extends Observable {
 
 		
 	//TODO: android.text has a DateFormat.. might be better
@@ -155,7 +156,6 @@ public class TwitterSource implements SourceInterface {
 	 *
 	 * @return     All tweets
 	 */
-	@Override
 	public ArrayList<Tweet> getAllTweets() {
 		return new ArrayList<Tweet>(tweets.values());
 	}	
@@ -170,6 +170,11 @@ public class TwitterSource implements SourceInterface {
 
 		@Override
 		protected void onPostExecute(Boolean result) {
+			if(result){
+				setChanged();
+				notifyObservers();
+				}
+			
 			if(result && observers != null)
 				observers.notifyChanged();
 		}
@@ -281,7 +286,6 @@ public class TwitterSource implements SourceInterface {
 			sortTweets();
 		return true;
 	}
-
 
 	private void sortTweets()  {
 		ArrayList<Tweet> list = new ArrayList<Tweet>(tweets.values());

@@ -48,12 +48,11 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 				+ KEY_TW_RTCOUNT + " TEXT" + ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
 		
-		add3Tweets();
+		//add3Tweets();
 	}
 	
 	/*
 	 * Test the database 
-	 */
 	public void add3Tweets() {
 		
 	    int count = size();
@@ -96,7 +95,8 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-	}
+		
+	}*/
 
 	// Upgrade Database
 	@Override
@@ -201,7 +201,7 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 	}
 
 	// Update Single Tweet
-	public int updateContact(Tweet tweet) {
+	public int updateTweet(Tweet tweet) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -219,7 +219,7 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 	}
 
 	// Delete Single Tweet
-	public void deleteContact(Tweet tweet) {
+	public void deleteTweet(Tweet tweet) {
 		SQLiteDatabase db = this.getWritableDatabase();
 	    db.delete(TABLE_NAME, KEY_TW_ID + " = ?",
 	            new String[] { String.valueOf(tweet.getTweetId()) });

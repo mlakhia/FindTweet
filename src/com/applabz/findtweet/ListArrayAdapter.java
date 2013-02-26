@@ -17,27 +17,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 @SuppressWarnings("unused")
-public class ListArrayAdapter extends ArrayAdapter<Tweet> {
+public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
 		
 	private Context context;
 	private int layoutResourceId;	
 	private ArrayList<Tweet> tweets;
-	
-	private final DataSetObservable dataSetObservable;
-	private ArrayList<DataSetObserver> observers;
 
 	public ListArrayAdapter(Context context, int layoutResourceId, ArrayList<Tweet> tweets) {
 		super(context, layoutResourceId);
 		this.context = context;
 		this.layoutResourceId = layoutResourceId;
 		this.tweets = tweets;
-		
-		dataSetObservable = new DataSetObservable();
-		observers = new ArrayList<DataSetObserver>();
-		
-		
 	}
-
+	
+	@Override	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// assign the view we are converting to a local variable
 		View v = convertView;
@@ -82,23 +75,24 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> {
 		return v;
 	}
 	
-	 public void notifyDataSetChanged() {
-        this.getDataSetObservable().notifyChanged();
-    }
+	@Override
+	public int getCount() { 
+		return tweets.size(); 
+	}	
 
-    public void notifyDataSetInvalidated() {
-        this.getDataSetObservable().notifyInvalidated();
-    }
+	@Override
+	public Tweet getItem(int position) {
+		return this.tweets.get(position);
+	}
 
-    public void registerDataSetObserver(DataSetObserver observer) {
-        this.getDataSetObservable().registerObserver(observer);
-    }
+	@Override
+	public long getItemId(int position) {
+		return this.tweets.get(position).getTweetId();
+	}
 
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-        this.getDataSetObservable().unregisterObserver(observer);
-    }
-    
-    protected DataSetObservable getDataSetObservable() {
-        return dataSetObservable;
-    }
+	@Override
+	public void update(Observable observable, Object data) {
+		notifyDataSetChanged();		
+	}	
+	
 }

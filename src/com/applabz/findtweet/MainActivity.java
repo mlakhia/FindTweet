@@ -1,6 +1,7 @@
 package com.applabz.findtweet;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,7 +29,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 @SuppressWarnings("unused")
-public class MainActivity extends Activity implements Observer {
+public class MainActivity extends Activity {
 	
 	class TweetComparator implements Comparator<Tweet> {
     	public int compare(Tweet lhs, Tweet rhs) {
@@ -55,7 +56,7 @@ public class MainActivity extends Activity implements Observer {
 	    //actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		// start db
-		TS = new TwitterSource("lol", new TweetComparator());
+		TS = new TwitterSource(new TweetComparator());
         db = new TweetDbSource(this);        
         
         //add3Tweets(); // to database
@@ -94,19 +95,29 @@ public class MainActivity extends Activity implements Observer {
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-		invalidateOptionsMenu();
+		//invalidateOptionsMenu();
 		return false;
 	}	
 	
 	public void goHome(){
 		Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivityForResult(intent, 400);//startActivity(intent);
+    	overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 	
 	public void goSaved(){
-		Intent intent = new Intent(this, SavedActivity.class);
-        startActivity(intent);
+
+    	Intent intent = new Intent(this, SavedActivity.class);
+    	startActivityForResult(intent, 400);//startActivity(intent);
+    	overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
+        
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data){
+		super.onActivityResult(requestCode, resultCode, data);
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 	
 	public boolean goSearch(){
@@ -120,12 +131,6 @@ public class MainActivity extends Activity implements Observer {
 			showAlertDialog(context, null, getString(R.string.nointernet), true);
 			return false;
 		}
-	}
-	
-
-	public void update(Observable observable, Object data) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/*
@@ -179,7 +184,7 @@ public class MainActivity extends Activity implements Observer {
 	
 	/*
 	 * Test the database 
-	 */
+	 
 	public void testDB(){
 		
 		// Inserting Tweet
@@ -222,7 +227,7 @@ public class MainActivity extends Activity implements Observer {
 	
 	/*
 	 * Log out a Tweet
-	 */
+	 
 	public void logTweet(Tweet tw){
 		String log = 
         		"tweetId: "+tw.getTweetId()+ " , \n"+
@@ -234,7 +239,7 @@ public class MainActivity extends Activity implements Observer {
         		"rtCount: " + tw.getRetweetCount() + " , \n";
         // Writing Contacts to log
         Log.d("Tweet", log);
-	}
+	}*/
 	
 	
 	/**
