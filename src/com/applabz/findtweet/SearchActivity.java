@@ -1,7 +1,10 @@
 package com.applabz.findtweet;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+
+import com.applabz.findtweet.MainActivity.TweetComparator;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -10,21 +13,28 @@ import android.content.Intent;
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 
-public class SearchActivity extends MainActivity implements Observer {
+public class SearchActivity extends MainActivity {
 
 	private String searchString = null;
 	private ProgressDialog progressDialog;
 	private ListAdapter listAdapter;
 	private ListView listView;
+	private DataSetObservable DSO_SA = new DataSetObservable();
 
+	static TwitterSource TS;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -34,54 +44,50 @@ public class SearchActivity extends MainActivity implements Observer {
     	ActionBar actionBar = getActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true); // creates back button out of icon	    
 	    
-	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, MainActivity.TS.getAllTweets());
+	    TS = new TwitterSource(new TweetComparator());
+	    
+	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, TS.getAllTweets());
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);
 		
-		DataSetObserver ds1;//new Observer();
-    	DataSetObservable DSO = new DataSetObservable();
-		
-		DSO.registerObserver(ds1);
-		MainActivity.TS.setObservers(DSO);
-    	
-    	MainActivity.TS.setSearchString(this.searchString);
+		DataSetObserver observer = new DataSetObserver() {  
+			@Override  
+			public void onChanged() {
+				if(progressDialog != null){
+					progressDialog.dismiss();
+					progressDialog = null;
+				}
+			}  
+		};		
+		DSO_SA.registerObserver(observer);
+		DSO_SA.registerObserver( ((ListArrayAdapter) listAdapter).getDataSetObserver() );
+		TS.setObservers(DSO_SA);
+
+		TS.setSearchString(this.searchString);
 		
     	progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
     	
 		Toast toast = Toast.makeText(this, this.searchString+" - started", Toast.LENGTH_LONG);
 		toast.setGravity(Gravity.TOP, 0, 25);
 		toast.show();
-		
-		
-		
-		/*
-        listView.setOnItemClickListener( new OnItemClickListener() {
+				
+        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id) {
-            	Log.v("", parent.toString());
+				Log.v("", parent.toString());
             	Log.v("", ""+position);
             	Log.v("", v.toString());
             	Log.v("", ""+id);
             	
-            	Tweet tweet = (Tweet) listAdapter.getItem(position);            	
+            	Tweet tweet = (Tweet) listAdapter.getItem(position);
+            	MainActivity.db.addTweet(tweet);
             	
-            	//TweetDbSource db = new TweetDbSource(MainActivity.context);   
-            	//MainActivity.db.addTweet(tweet);            	
-
             	Toast.makeText(context, "saved tweet!", Toast.LENGTH_LONG).show();
-            }
-        });*/
+			}
+        });
 		
     }
     
-    
-    /*
-    public void onListItemClick(ListView l, View v, int position, long id) { 
-    	Log.v("", l.toString());
-    	Log.v("", ""+position);
-    	Log.v("", v.toString());
-    	Log.v("", ""+id);
-    }*/
-
     @Override
     protected void onNewIntent(Intent intent) {
     	setIntent(intent); 
@@ -112,14 +118,14 @@ public class SearchActivity extends MainActivity implements Observer {
 		return true;
     }
 
-
+/*
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		((ListArrayAdapter) listAdapter).notifyDataSetChanged();
+		//((ListArrayAdapter) listAdapter).notifyDataSetChanged();
 		if(progressDialog != null){
 			progressDialog.dismiss();
 			progressDialog = null;
 		}		
-	}
+	}*/
 	
 }

@@ -13,21 +13,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 @SuppressWarnings("unused")
-public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
+public class ListArrayAdapter extends ArrayAdapter<Tweet> implements ListAdapter {
 		
 	private Context context;
 	private int layoutResourceId;	
 	private ArrayList<Tweet> tweets;
-
+	DataSetObserver observer;
+	
 	public ListArrayAdapter(Context context, int layoutResourceId, ArrayList<Tweet> tweets) {
 		super(context, layoutResourceId);
 		this.context = context;
 		this.layoutResourceId = layoutResourceId;
 		this.tweets = tweets;
+		
+		observer = new DataSetObserver() {  
+			@Override  
+			public void onChanged() {  
+				notifyDataSetChanged();
+				updateData();
+			}
+		};		
+	}
+	
+	public void updateData(){
+		this.tweets = SearchActivity.TS.getAllTweets();
 	}
 	
 	@Override	
@@ -75,9 +89,14 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
 		return v;
 	}
 	
+	public DataSetObserver getDataSetObserver(){
+		return this.observer;
+	}
+	
+	
 	@Override
 	public int getCount() { 
-		return tweets.size(); 
+		return this.tweets.size(); 
 	}	
 
 	@Override
@@ -89,10 +108,5 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements Observer {
 	public long getItemId(int position) {
 		return this.tweets.get(position).getTweetId();
 	}
-
-	@Override
-	public void update(Observable observable, Object data) {
-		notifyDataSetChanged();		
-	}	
 	
 }

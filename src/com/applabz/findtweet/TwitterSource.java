@@ -43,7 +43,7 @@ import android.util.Log;
  *	 TODO: more parameters for generating query (ex: result_type, rpp/count)
  *
  */
-public class TwitterSource extends Observable {
+public class TwitterSource {
 
 		
 	//TODO: android.text has a DateFormat.. might be better
@@ -169,12 +169,7 @@ public class TwitterSource extends Observable {
 		}
 
 		@Override
-		protected void onPostExecute(Boolean result) {
-			if(result){
-				setChanged();
-				notifyObservers();
-				}
-			
+		protected void onPostExecute(Boolean result) {			
 			if(result && observers != null)
 				observers.notifyChanged();
 		}

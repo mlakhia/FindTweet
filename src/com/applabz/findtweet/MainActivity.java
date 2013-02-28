@@ -41,8 +41,8 @@ public class MainActivity extends Activity {
     	}
     }
 
-	protected static TweetDbSource db;
-	protected static TwitterSource TS;
+	public static TweetDbSource db;
+	//protected static TwitterSource TS;
 	
 	static Context context;
 	
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 	    //actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		// start db
-		TS = new TwitterSource(new TweetComparator());
+		
         db = new TweetDbSource(this);        
         
         //add3Tweets(); // to database
@@ -156,28 +156,6 @@ public class MainActivity extends Activity {
 			 .show();
 	}
 
-	/*
-	 * Present the user with a simple dialog to confirm a tweet deletion
-	 */
-	private void confirmDeleteTweet(final Tweet t) {
-	
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Delete tweet?")
-			 .setMessage(t.getTweet())
-			 .setPositiveButton("Ok", new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int button) {
-					//TODO
-				}
-			 })
-			 .setIcon(android.R.drawable.ic_delete)
-			 .setNegativeButton("Cancel", new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int button) {} // cancel
-			 })
-			 .show();
-	}
-	
 	
 	
 	

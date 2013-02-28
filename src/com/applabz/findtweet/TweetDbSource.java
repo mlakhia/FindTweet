@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DataSetObservable;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -33,6 +34,17 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 	public TweetDbSource(Context context) {
 		super(context, DATABASE_NAME, null, VERSION);
 	}
+	
+	private DataSetObservable observers;
+
+	public void setObservers(DataSetObservable observers) {
+		this.observers = observers;
+	}
+	
+	private void onDBUpdated(){
+		if(observers != null)
+			observers.notifyChanged();
+	}
 
 	// Create Tables
 	@Override
@@ -47,56 +59,7 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 				+ KEY_TW_CREATED + " TEXT," 
 				+ KEY_TW_RTCOUNT + " TEXT" + ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
-		
-		//add3Tweets();
 	}
-	
-	/*
-	 * Test the database 
-	public void add3Tweets() {
-		
-	    int count = size();
-	    
-	    try {
-			addTweet(new Tweet(
-					count++, 
-					3211, 
-					"test user1", 
-					"test name1", 
-					"DAT TWEET #LULZ1", 
-					"20101216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	    
-	    try {
-			addTweet(new Tweet(
-					count++, 
-					3121, 
-					"test user2", 
-					"test name2", 
-					"DAT TWEET #LULZ2", 
-					"20111216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-	    
-	    try {
-			addTweet(new Tweet(
-					count++, 
-					3211, 
-					"test user3", 
-					"test name3", 
-					"DAT TWEET #LULZ3", 
-					"20121216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-	}*/
 
 	// Upgrade Database
 	@Override
@@ -104,6 +67,7 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 		// create tables again
 		onCreate(db);
+		onDBUpdated();
 	}
 
 	// Add New Tweet
@@ -121,7 +85,8 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 
 		// Inserting Row
 		db.insert(TABLE_NAME, null, values);
-		db.close(); // Closing database connection
+		//db.close(); // Closing database connection
+		onDBUpdated();
 	}
 
 	// Get Single Tweet
@@ -152,7 +117,7 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		return tweet;
 	}
 
@@ -195,7 +160,7 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		String countQuery = "SELECT  * FROM " + TABLE_NAME;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
-		cursor.close();
+		//cursor.close();
 
 		return cursor.getCount();
 	}
@@ -213,6 +178,8 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		values.put(KEY_TW_CREATED, tweet.getCreatedAsString());
 		values.put(KEY_TW_RTCOUNT, tweet.getRetweetCount());
 
+		onDBUpdated();
+		
 		// update row
 		return db.update(TABLE_NAME, values, KEY_TW_ID + " = ?",
 				new String[] { String.valueOf(tweet.getTweetId()) });
@@ -223,7 +190,9 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		SQLiteDatabase db = this.getWritableDatabase();
 	    db.delete(TABLE_NAME, KEY_TW_ID + " = ?",
 	            new String[] { String.valueOf(tweet.getTweetId()) });
-	    db.close();
+	    //db.close();
+
+		onDBUpdated();
 	}
 
 }
