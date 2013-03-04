@@ -6,10 +6,9 @@
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="android.widget.SearchView" />
     
-    <item android:id="@+id/menu_saved"
-          android:title="@string/menu_saved"
+    <item android:id="@+id/menu_favorites"
+          android:title="@string/menu_favorites"
           android:icon="@android:drawable/ic_menu_save"
-          android:showAsAction="always" >
-          
-    </item>
+          android:showAsAction="always"/>
+    
 </menu>

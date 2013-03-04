@@ -5,23 +5,36 @@
 
     <string name="welcome">Welcome! Start by entering in a tag to Search by.</string>
     
+    
+    <string name="nointernet_title">You ran out of internets!</string>
+    <string name="nointernet_text">Connect to a working Internet to Search! Click OK to internets.</string>
+    
+    <string name="added_favorites">Added to favorites!</string>
+    
     <string name="loading">Loading</string>
     <string name="refresh">Refresh</string>
 
+    <string name="title_welcome">Welcome</string>
+    <string name="title_search">Search</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_tag">Tag:</string>
+    
     <string name="menu_settings">Settings</string>
     <string name="menu_search">Search</string>
-  	<string name="menu_search_hint">type a tag</string>
+  	<string name="menu_search_hint">Type a Tag</string>
+  	
+  	<string name="menu_search_voicehint">Speak a Tag</string>
+  	
     <string name="menu_find">Find</string>
-    <string name="menu_saved">Saved</string>
+    <string name="menu_favorites">Favorites</string>
     <string name="menu_tweets">Tweets</string>
-    
-    <string name="title_saved">   Saved Tweets</string>
-    
-    <string name="nointernet">Connect to the Internet to Search!</string>
     
     <string name="NAME">NAME</string>
     <string name="DATE">DATE</string>
     <string name="TWEET">TWEET</string>
+    
+    <string name="quit_title">Quit?</string>
+    <string name="quit_text">Are you sure you want to quit?</string>
     
 
 </resources>

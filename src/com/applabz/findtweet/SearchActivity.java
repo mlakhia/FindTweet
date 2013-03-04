@@ -1,10 +1,5 @@
 package com.applabz.findtweet;
 
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-
-import com.applabz.findtweet.MainActivity.TweetComparator;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -17,11 +12,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -38,13 +35,17 @@ public class SearchActivity extends MainActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	handleIntent(getIntent());
+    	handleIntent(getIntent()); // sets searchString field
     	setContentView(R.layout.activity_search);
     	
     	ActionBar actionBar = getActionBar();
-	    actionBar.setDisplayHomeAsUpEnabled(true); // creates back button out of icon	    
+	    actionBar.setDisplayHomeAsUpEnabled(true); // creates back button out of icon
+	    
+	    String title = new StringBuilder(getResources().getString(R.string.title_tag)).append(" ").append(searchString).toString();
+	    actionBar.setTitle(title);
 	    
 	    TS = new TwitterSource(new TweetComparator());
+	    TS.setSearchString(this.searchString);
 	    
 	    listAdapter = new ListArrayAdapter(this, R.layout.list_tweet, TS.getAllTweets());
 		listView = (ListView)findViewById(R.id.listView);
@@ -53,6 +54,7 @@ public class SearchActivity extends MainActivity {
 		DataSetObserver observer = new DataSetObserver() {  
 			@Override  
 			public void onChanged() {
+				((BaseAdapter) listAdapter).notifyDataSetChanged();
 				if(progressDialog != null){
 					progressDialog.dismiss();
 					progressDialog = null;
@@ -61,16 +63,10 @@ public class SearchActivity extends MainActivity {
 		};		
 		DSO_SA.registerObserver(observer);
 		DSO_SA.registerObserver( ((ListArrayAdapter) listAdapter).getDataSetObserver() );
-		TS.setObservers(DSO_SA);
-
-		TS.setSearchString(this.searchString);
+		TS.setObservers(DSO_SA);		
 		
     	progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
     	
-		Toast toast = Toast.makeText(this, this.searchString+" - started", Toast.LENGTH_LONG);
-		toast.setGravity(Gravity.TOP, 0, 25);
-		toast.show();
-				
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id) {
@@ -82,21 +78,47 @@ public class SearchActivity extends MainActivity {
             	Tweet tweet = (Tweet) listAdapter.getItem(position);
             	MainActivity.db.addTweet(tweet);
             	
-            	Toast.makeText(context, "saved tweet!", Toast.LENGTH_LONG).show();
+            	
+            	
+            	View layout = getLayoutInflater().inflate(R.layout.toast_layout, (ViewGroup)findViewById(R.id.toast_layout_root));
+            	TextView text = (TextView) layout.findViewById(R.id.text);
+            	text.setText(R.string.added_favorites);
+
+            	Toast toast = new Toast(getApplicationContext());
+            	toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            	toast.setDuration(Toast.LENGTH_SHORT);
+            	toast.setView(layout);
+            	toast.show();
+            	//Toast.makeText(context, R.string.added_favorites, Toast.LENGTH_LONG).show();
 			}
         });
 		
     }
     
+    
+    @Override
+	public void onBackPressed() {
+	    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+	}
+
+	@Override
+	public void startActivity(Intent intent) {
+	    super.startActivity(intent);
+	    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+	}
+	
+    
     @Override
     protected void onNewIntent(Intent intent) {
-    	setIntent(intent); 
+    	setIntent(intent);
         handleIntent(intent);
     }
     
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-        	this.searchString = intent.getStringExtra(SearchManager.QUERY);        	      
+        	this.searchString = intent.getStringExtra(SearchManager.QUERY);
+        	if(listAdapter != null)
+        		((BaseAdapter) listAdapter).notifyDataSetChanged();
         }
     }    
     
@@ -104,28 +126,12 @@ public class SearchActivity extends MainActivity {
     	super.onCreateOptionsMenu(menu);
 
     	SearchView searchView = (SearchView) menu.findItem(R.id.menu_find).getActionView();
-	    //searchView.setQuery(this.searchString, false);
-	    searchView.setFocusable(false);
-	    searchView.setIconified(false);
+	    searchView.setQuery(this.searchString, false);
+	    searchView.setFocusable(true);
+	    searchView.setIconified(true);
 	    searchView.requestFocusFromTouch();
-	    
-	    //progressDialog.dismiss();
-
-	    //ActionBar actionBar = getActionBar();
-	    //actionBar.setCustomView(searchView);
-	    //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     	
 		return true;
     }
-
-/*
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		//((ListArrayAdapter) listAdapter).notifyDataSetChanged();
-		if(progressDialog != null){
-			progressDialog.dismiss();
-			progressDialog = null;
-		}		
-	}*/
 	
 }

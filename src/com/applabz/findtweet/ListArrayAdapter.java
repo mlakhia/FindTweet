@@ -27,6 +27,7 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements ListAdapter
 	
 	public ListArrayAdapter(Context context, int layoutResourceId, ArrayList<Tweet> tweets) {
 		super(context, layoutResourceId);
+		//super(context, layoutResourceId);
 		this.context = context;
 		this.layoutResourceId = layoutResourceId;
 		this.tweets = tweets;
@@ -34,7 +35,7 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements ListAdapter
 		observer = new DataSetObserver() {  
 			@Override  
 			public void onChanged() {  
-				notifyDataSetChanged();
+				//notifyDataSetChanged();
 				updateData();
 			}
 		};		
@@ -53,7 +54,7 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements ListAdapter
 		// to inflate it basically means to render, or show, the view.
 		if (v == null) {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = inflater.inflate(R.layout.list_tweet, null);
+			v = inflater.inflate(layoutResourceId, null);
 		}
 
 		/*
@@ -108,5 +109,52 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements ListAdapter
 	public long getItemId(int position) {
 		return this.tweets.get(position).getTweetId();
 	}
+
+	@Override
+	public int getItemViewType(int position) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
+	/*
+	@Override
+	public int getViewTypeCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		return false;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void registerDataSetObserver(DataSetObserver observer) {
+		
+	}
+
+	@Override
+	public void unregisterDataSetObserver(DataSetObserver observer) {
+		
+	}
+
+	@Override
+	public boolean areAllItemsEnabled() {
+		
+		return false;
+	}
+
+	@Override
+	public boolean isEnabled(int position) {
+		
+		return false;
+	}
+	*/
 }

@@ -14,6 +14,9 @@ public class ConnectionDetector {
  
     public boolean isConnectedToInternet(){
         ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        //Boolean is3g = connectivity.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+        //Boolean isWifi = connectivity.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+
           if (connectivity != null){
               NetworkInfo[] info = connectivity.getAllNetworkInfo();
               if (info != null)

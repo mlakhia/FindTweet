@@ -2,6 +2,8 @@ package com.applabz.findtweet;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.R.drawable;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,23 +12,36 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 
 @SuppressWarnings("unused")
 public class MainActivity extends Activity {
@@ -41,44 +56,92 @@ public class MainActivity extends Activity {
     	}
     }
 
+	private SpeechRecognizer speechRecognizer;
+	private final int SPEECHTOTEXT = 1;
+	private String voiceQuery;
+	
 	public static TweetDbSource db;
-	//protected static TwitterSource TS;
 	
 	static Context context;
+	Menu menu;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		MainActivity.context = getApplicationContext();
+		MainActivity.context = this;
 		setContentView(R.layout.activity_main);
+		
+		speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getBaseContext());
 		
 		ActionBar actionBar = getActionBar();
 	    //actionBar.setDisplayHomeAsUpEnabled(true);
 		
-		// start db
-		
-        db = new TweetDbSource(this);        
+		// start db		
+        db = new TweetDbSource(this);
         
-        //add3Tweets(); // to database
-        //testDB();
+        
+        TextView tvWelcome = (TextView) findViewById(R.id.welcome);
+        
+        tvWelcome.setOnTouchListener(new View.OnTouchListener () {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				View layout = getLayoutInflater().inflate(R.layout.toast_layout, (ViewGroup)findViewById(R.id.toast_layout_root));
+            	TextView text = (TextView) layout.findViewById(R.id.text);
+            	text.setText(R.string.added_favorites);
+
+            	Toast toast = new Toast(getApplicationContext());
+            	toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            	toast.setDuration(Toast.LENGTH_SHORT);
+            	toast.setView(layout);
+            	toast.show();
+				return true;
+			}
+        });
+        
+        
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-	    
-		// Associate searchable configuration with the SearchView
-	    SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);	    
-	    // get search view
+		//getMenuInflater().inflate(R.menu.activity_main, menu);	
+		this.menu = menu;
+		getMenuInflater().inflate(R.menu.options_menu, menu);
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		
 		SearchView searchView = (SearchView) menu.findItem(R.id.menu_find).getActionView();
-		// 
+		
 	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-	    searchView.setIconifiedByDefault(false);
 	    
-		return true;//super.onCreateOptionsMenu(menu);
-		//return true;
+	    searchView.setFocusable(true);
+	    searchView.setIconified(false);
+	    searchView.setIconifiedByDefault(false);
+	    searchView.setSubmitButtonEnabled(true);
+	    searchView.requestFocusFromTouch();
+	    
+	    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener (){
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				if(!internetReady())
+					return true; // returning true notifys that you've handled, return false lets query pass
+				return false;
+			}
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				return false;
+			}
+		});	    
+		return super.onCreateOptionsMenu(menu);
 	}
+	/*
+	//@Override
+	public boolean onSearch() {
+		if(internetReady())
+			return true;
+	
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		searchManager.stopSearch();
+	    return false;
+	}*/
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {		
@@ -87,138 +150,135 @@ public class MainActivity extends Activity {
 				goHome();
 				return true;
 			case R.id.menu_find:
-				if(!goSearch()) break;
-				return true;
-			case R.id.menu_saved:
+				return internetReady();		
+			case R.id.menu_favorites:
 				goSaved();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-		//invalidateOptionsMenu();
-		return false;
 	}	
-	
+	/*
+	private void goVoiceSearch() {
+		
+		 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+		 
+         // Getting an instance of PackageManager
+         PackageManager pm = getPackageManager();
+
+         // Querying Package Manager
+         List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
+
+         if(activities.size()<=0){
+             Toast.makeText(getBaseContext(),
+                 "No Activity found to handle the action ACTION_RECOGNIZE_SPEECH",
+                 Toast.LENGTH_SHORT).show();
+                 return;
+         }
+
+         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+             intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Voice recognition Demo...");
+             startActivityForResult(intent, SPEECHTOTEXT);
+		
+	}	
+	*/
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        /*
+        //EditText etText = (EditText) findViewById(R.id.et_text);
+        ListView lvText = (ListView) findViewById(R.id.listView);
+ 	
+        switch (requestCode) {
+            case SPEECHTOTEXT:
+                if (resultCode == RESULT_OK && null != data) {
+                     //this.voiceQuery = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                     
+                     //SearchView searchView = (SearchView) menu.findItem(R.id.menu_find).getActionView(); 
+             	    //searchView.setQuery(this.voiceQuery, true);
+                }
+                break;
+        }*/
+    }
+
 	public void goHome(){
 		Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivityForResult(intent, 400);//startActivity(intent);
-    	overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        //startActivityForResult(intent, 400);
+        startActivity(intent);
+    	//overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 	
 	public void goSaved(){
-
-    	Intent intent = new Intent(this, SavedActivity.class);
-    	startActivityForResult(intent, 400);//startActivity(intent);
-    	overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
-        
+    	Intent intent = new Intent(this, FavoritesActivity.class);
+    	//startActivityForResult(intent, 400);
+    	startActivity(intent);
+    	//overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
 	}
+	
+	
 	
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data){
-		super.onActivityResult(requestCode, resultCode, data);
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	public void onBackPressed() {
+
+		new AlertDialog.Builder(this)
+				.setIcon(drawable.ic_dialog_alert)
+				.setTitle(context.getString(R.string.quit_title))
+				.setMessage(context.getString(R.string.quit_text))
+				.setPositiveButton(android.R.string.yes,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								moveTaskToBack(true);
+								MainActivity.this.finish();
+							}
+						})
+				.setNegativeButton(android.R.string.no,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						}).create().show();
+
+	}
+
+
+	@Override
+	public void startActivity(Intent intent) {
+	    super.startActivity(intent);
+	    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+	}
+
+	@Override
+	public void finish() {
+	    super.finish();
+	    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 	}
 	
-	public boolean goSearch(){
+	
+	
+	public void closeKeyboard(){
+		//InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		//imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		//this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+	}
+	
+	
+	
+	public boolean internetReady(){
 		// before sending intent, can return false to not send intent		
-		ConnectionDetector cd = new ConnectionDetector(getApplicationContext());		 
-		
+		ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
 		if(cd.isConnectedToInternet()){
 			Log.d("Network", "Connected");
 			return true;
-		}else{
-			showAlertDialog(context, null, getString(R.string.nointernet), true);
-			return false;
 		}
+		showAlertDialog(context, getString(R.string.nointernet_title), getString(R.string.nointernet_text), true);
+		return false;
 	}
-
-	/*
-	 * Present the user with a simple dialog to enter search string
-	 */
-	private void acquireSearchString(final String currentSearch) {
-		final EditText input = new EditText(this);
-		input.setText(currentSearch);
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Search Twitter")
-			 .setMessage("Enter search")
-			 .setView(input)
-			 .setPositiveButton("Ok", new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int button) {
-					//TODO
-				}
-			 })
-			 .setNegativeButton("Cancel", new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int button) {} // cancel
-			 })
-			 .show();
-	}
-
-	
-	
-	
-	
-	/*
-	 * Test the database 
-	 
-	public void testDB(){
-		
-		// Inserting Tweet
-        Log.d("Insert: ", "Inserting ..");        
-        try {
-			db.addTweet(new Tweet(
-					123, 
-					321, 
-					"test user", 
-					"test name", 
-					"DAT TWEET #LULZ", 
-					"20121216063056", 
-					0));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-        
-        // Reading test tweet 1
-        Log.d("Reading: ", "Reading test tweet 1");
-        Tweet testTweet = null;
-		try {
-			testTweet = db.getTweet(123);
-	        logTweet(testTweet);
-		} catch (NumberFormatException e1) {
-			e1.printStackTrace();
-		}	
-        
-        // Reading all tweets
-        Log.d("Reading: ", "Reading all tweets..");        
-        List<Tweet> tweets = null;
-		try {
-			tweets = db.getAllTweets();
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
-		
-        for (Tweet tw : tweets)
-            logTweet(tw);
-	}
-	
-	/*
-	 * Log out a Tweet
-	 
-	public void logTweet(Tweet tw){
-		String log = 
-        		"tweetId: "+tw.getTweetId()+ " , \n"+
-        		"userId: " + tw.getUserId() + " , \n"+
-        		"user: " + tw.getUser() + " , \n"+
-        		"name: " + tw.getName() + " , \n"+
-        		"tweet: " + tw.getTweet() + " , \n"+
-        		"created: " + tw.getCreatedAsString() + " , \n"+
-        		"rtCount: " + tw.getRetweetCount() + " , \n";
-        // Writing Contacts to log
-        Log.d("Tweet", log);
-	}*/
-	
 	
 	/**
      * Function to display simple Alert Dialog
@@ -227,19 +287,20 @@ public class MainActivity extends Activity {
      * @param message - alert message
      * @param status - success/failure (used to set icon)
      * */
-	public void showAlertDialog(Context context, String title, String message, Boolean status) {    	
+	public void showAlertDialog(Context context, final String title, final String message, Boolean status) {    	
     	AlertDialog.Builder alert = new AlertDialog.Builder(this); 
-    	alert.setTitle(title)
+    	alert
+    	 .setTitle(title)
 		 .setMessage(message)
 		 .setPositiveButton("OK", new OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int button) {				
+			public void onClick(DialogInterface dialog, int button) {	
+				if(title.equalsIgnoreCase(getString(R.string.nointernet_title)) )
+					startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
 				return;
 			}
 		 })
-		 .setIcon(android.R.drawable.ic_dialog_alert)		 
+		 .setIcon(drawable.ic_dialog_alert)		 
 		 .show();
-    }
-
-	
+    }		
 }

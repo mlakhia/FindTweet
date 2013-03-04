@@ -51,8 +51,8 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_CONTACTS_TABLE = 
 			"CREATE TABLE " + TABLE_NAME + "("
-				+ KEY_TW_ID + " INTEGER PRIMARY KEY," 
-				+ KEY_TW_USERID	+ " TEXT," 
+				+ KEY_TW_ID + " LONG PRIMARY KEY," 
+				+ KEY_TW_USERID	+ " LONG," 
 				+ KEY_TW_USER + " TEXT," 
 				+ KEY_TW_NAME + " TEXT," 
 				+ KEY_TW_TWEET + " TEXT,"
@@ -105,9 +105,13 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 
 		Tweet tweet = null;
 		try {
+			//String templong0 = cursor.getString(0);
+			String templong1 = cursor.getString(1);
+			String templong2 = cursor.getString(2);
+			
 			tweet = new Tweet(
-					Long.parseLong(cursor.getString(0)),
-					Long.parseLong(cursor.getString(1)), 
+					Long.parseLong(templong1),
+					Long.parseLong(templong2), 
 					cursor.getString(2),
 					cursor.getString(3), 
 					cursor.getString(4), 
@@ -161,8 +165,8 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
 		//cursor.close();
-
-		return cursor.getCount();
+		int cursorSize = cursor.getCount();
+		return cursorSize;
 	}
 
 	// Update Single Tweet
