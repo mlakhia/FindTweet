@@ -71,29 +71,32 @@ public class TweetDbSource extends SQLiteOpenHelper {
 	}
 
 	// Add New Tweet
-	public void addTweet(Tweet tweet) {		
+	public void addTweet(Tweet tweet) {
+		SQLiteDatabase db = this.getWritableDatabase();
 		
+		ContentValues values = new ContentValues();
+		values.put(KEY_TW_ID, tweet.getTweetId());
+		values.put(KEY_TW_USERID, tweet.getUserId());
+		values.put(KEY_TW_USER, tweet.getUser());
+		values.put(KEY_TW_NAME, tweet.getName());
+		values.put(KEY_TW_TWEET, tweet.getName());
+		values.put(KEY_TW_CREATED, tweet.getCreatedAsString());
+		values.put(KEY_TW_RTCOUNT, tweet.getRetweetCount());
+
+		// Inserting Row
+		db.insert(TABLE_NAME, null, values);
+		//db.close(); // Closing database connection
+		onDBUpdated();
+	}
+	
+	public boolean isTweetSaved(Tweet tweet){		
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery("SELECT count(*) FROM " + TABLE_NAME + " WHERE " + KEY_TW_ID + "='"+tweet.getTweetId()+"'", null);
 		cursor.moveToFirst();
-		int sameTweets = cursor.getInt(0);
+		int savedTweets = cursor.getInt(0);
 		cursor.close();
 		
-		if(sameTweets <= 0){	
-			ContentValues values = new ContentValues();
-			values.put(KEY_TW_ID, tweet.getTweetId());
-			values.put(KEY_TW_USERID, tweet.getUserId());
-			values.put(KEY_TW_USER, tweet.getUser());
-			values.put(KEY_TW_NAME, tweet.getName());
-			values.put(KEY_TW_TWEET, tweet.getName());
-			values.put(KEY_TW_CREATED, tweet.getCreatedAsString());
-			values.put(KEY_TW_RTCOUNT, tweet.getRetweetCount());
-	
-			// Inserting Row
-			db.insert(TABLE_NAME, null, values);
-			//db.close(); // Closing database connection
-			onDBUpdated();
-		}
+		return (savedTweets > 0);
 	}
 
 	// Get Single Tweet

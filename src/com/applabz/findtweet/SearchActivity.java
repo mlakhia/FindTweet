@@ -7,6 +7,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,7 +32,8 @@ public class SearchActivity extends MainActivity {
 	private ListAdapter listAdapter;
 	private ListView listView;
 	private DataSetObservable DSO_SA = new DataSetObservable();
-
+	Toast toast = null;
+	
 	static TwitterSource TS;
 	
     @Override
@@ -74,15 +76,22 @@ public class SearchActivity extends MainActivity {
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id) {
-				
-            	Tweet tweet = (Tweet) listAdapter.getItem(position);
-            	MainActivity.db.addTweet(tweet);
-
             	View layout = getLayoutInflater().inflate(R.layout.toast_layout, (ViewGroup)findViewById(R.id.toast_layout_root));
             	TextView text = (TextView) layout.findViewById(R.id.text);
-            	text.setText(R.string.added_favorites);
-
-            	Toast toast = new Toast(getApplicationContext());
+            	
+            	Tweet tweet = (Tweet) listAdapter.getItem(position);            	
+            	if(!db.isTweetSaved(tweet)){
+            		db.addTweet(tweet);
+            		text.setText(R.string.added_favorites);
+            	}else{
+            		text.setText(R.string.already_in_favorites);
+            		layout.setBackgroundColor(Color.MAGENTA);
+            	}
+            	
+            	if(toast != null)
+            		toast.cancel();
+            	
+            	toast = new Toast(getApplicationContext());
             	toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
             	toast.setDuration(Toast.LENGTH_SHORT);
             	toast.setView(layout);

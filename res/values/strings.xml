@@ -8,6 +8,7 @@
     <string name="nointernet_text">Connect to a working Internet to Search! Click OK to internets.</string>
     
     <string name="added_favorites">Added to favorites!</string>
+    <string name="already_in_favorites">Already in favorites!</string>    
     
     <string name="loading">Loading</string>
     <string name="refresh">Refresh</string>

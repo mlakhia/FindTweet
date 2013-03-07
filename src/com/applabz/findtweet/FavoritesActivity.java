@@ -30,6 +30,7 @@ public class FavoritesActivity extends MainActivity {
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);		    
 		
+		// Delete Tweet Listener
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id) {
