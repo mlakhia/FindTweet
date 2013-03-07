@@ -2,7 +2,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="?android:attr/listPreferredItemHeight"
-    	android:padding="6dip" 
+    	android:padding="7dp" 
     	android:orientation="vertical">
 
         <LinearLayout
@@ -21,8 +21,9 @@
                 android:id="@+id/textDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#333333"
-                android:text="@string/DATE" />
+                android:textColor="#666"
+                android:text="@string/DATE"
+                android:paddingLeft="10dp" />
 
         </LinearLayout>
 
@@ -30,7 +31,6 @@
             android:id="@+id/textTweet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-      
             android:text="@string/TWEET"/>
 
     </LinearLayout>

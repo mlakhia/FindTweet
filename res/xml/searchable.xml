@@ -5,4 +5,7 @@
         android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
         android:voiceMaxResults="1" 
         android:voicePromptText="@string/menu_search_voicehint"
-        android:inputType="text"/>
+        android:inputType="text"
+        android:searchSuggestAuthority = "com.applabz.findtweet.SearchSuggProvider"
+        android:searchSuggestSelection = " ?"
+        />

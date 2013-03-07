@@ -16,7 +16,7 @@ import android.database.DataSetObservable;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
+public class TweetDbSource extends SQLiteOpenHelper {
 
 	private static final int VERSION = 1;
 	private static final String DATABASE_NAME = "tweet.db";
@@ -71,22 +71,29 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 	}
 
 	// Add New Tweet
-	public void addTweet(Tweet tweet) {
+	public void addTweet(Tweet tweet) {		
+		
 		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_TW_ID, tweet.getTweetId());
-		values.put(KEY_TW_USERID, tweet.getUserId());
-		values.put(KEY_TW_USER, tweet.getUser());
-		values.put(KEY_TW_NAME, tweet.getName());
-		values.put(KEY_TW_TWEET, tweet.getName());
-		values.put(KEY_TW_CREATED, tweet.getCreatedAsString());
-		values.put(KEY_TW_RTCOUNT, tweet.getRetweetCount());
-
-		// Inserting Row
-		db.insert(TABLE_NAME, null, values);
-		//db.close(); // Closing database connection
-		onDBUpdated();
+		Cursor cursor = db.rawQuery("SELECT count(*) FROM " + TABLE_NAME + " WHERE " + KEY_TW_ID + "='"+tweet.getTweetId()+"'", null);
+		cursor.moveToFirst();
+		int sameTweets = cursor.getInt(0);
+		cursor.close();
+		
+		if(sameTweets <= 0){	
+			ContentValues values = new ContentValues();
+			values.put(KEY_TW_ID, tweet.getTweetId());
+			values.put(KEY_TW_USERID, tweet.getUserId());
+			values.put(KEY_TW_USER, tweet.getUser());
+			values.put(KEY_TW_NAME, tweet.getName());
+			values.put(KEY_TW_TWEET, tweet.getName());
+			values.put(KEY_TW_CREATED, tweet.getCreatedAsString());
+			values.put(KEY_TW_RTCOUNT, tweet.getRetweetCount());
+	
+			// Inserting Row
+			db.insert(TABLE_NAME, null, values);
+			//db.close(); // Closing database connection
+			onDBUpdated();
+		}
 	}
 
 	// Get Single Tweet
@@ -104,14 +111,10 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 			cursor.moveToFirst();
 
 		Tweet tweet = null;
-		try {
-			//String templong0 = cursor.getString(0);
-			String templong1 = cursor.getString(1);
-			String templong2 = cursor.getString(2);
-			
+		try {			
 			tweet = new Tweet(
-					Long.parseLong(templong1),
-					Long.parseLong(templong2), 
+					Long.parseLong(cursor.getString(1)),
+					Long.parseLong(cursor.getString(2)), 
 					cursor.getString(2),
 					cursor.getString(3), 
 					cursor.getString(4), 
@@ -164,8 +167,8 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 		String countQuery = "SELECT  * FROM " + TABLE_NAME;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
-		//cursor.close();
 		int cursorSize = cursor.getCount();
+		//cursor.close();
 		return cursorSize;
 	}
 
@@ -184,18 +187,14 @@ public class TweetDbSource extends SQLiteOpenHelper implements SourceInterface {
 
 		onDBUpdated();
 		
-		// update row
-		return db.update(TABLE_NAME, values, KEY_TW_ID + " = ?",
-				new String[] { String.valueOf(tweet.getTweetId()) });
+		return db.update(TABLE_NAME, values, KEY_TW_ID + " = ?", new String[] { String.valueOf(tweet.getTweetId()) });
 	}
 
 	// Delete Single Tweet
 	public void deleteTweet(Tweet tweet) {
 		SQLiteDatabase db = this.getWritableDatabase();
-	    db.delete(TABLE_NAME, KEY_TW_ID + " = ?",
-	            new String[] { String.valueOf(tweet.getTweetId()) });
+	    db.delete(TABLE_NAME, KEY_TW_ID + " = ?", new String[] { String.valueOf(tweet.getTweetId()) });
 	    //db.close();
-
 		onDBUpdated();
 	}
 

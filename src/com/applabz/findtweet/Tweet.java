@@ -1,11 +1,9 @@
 package com.applabz.findtweet;
 
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 
 public class Tweet {
 
@@ -142,7 +140,7 @@ public class Tweet {
 	 * @return creation date
 	 */
 	public String getCreatedAsString() {
-		return dateFormatter.format(created);
+		return dateFormatter.format(created);//DateFormat.getDateInstance().format(created);
 	}
 	
 	/**

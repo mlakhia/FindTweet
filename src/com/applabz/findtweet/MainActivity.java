@@ -2,6 +2,7 @@ package com.applabz.findtweet;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.SearchRecentSuggestions;
 import android.provider.Settings;
 import android.R.drawable;
 import android.app.ActionBar;
@@ -113,20 +114,25 @@ public class MainActivity extends Activity {
 	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 	    
 	    searchView.setFocusable(true);
-	    searchView.setIconified(false);
-	    searchView.setIconifiedByDefault(false);
+	    searchView.setIconified(true);
+	    //searchView.setIconifiedByDefault(false);
 	    searchView.setSubmitButtonEnabled(true);
 	    searchView.requestFocusFromTouch();
 	    
 	    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener (){
 			@Override
 			public boolean onQueryTextSubmit(String query) {
+				
+				SearchRecentSuggestions suggestions = new SearchRecentSuggestions(context, SearchSuggProvider.AUTHORITY, SearchSuggProvider.MODE);
+				suggestions.saveRecentQuery(query, null);
+				
 				if(!internetReady())
 					return true; // returning true notifys that you've handled, return false lets query pass
 				return false;
 			}
 			@Override
 			public boolean onQueryTextChange(String newText) {
+
 				return false;
 			}
 		});	    

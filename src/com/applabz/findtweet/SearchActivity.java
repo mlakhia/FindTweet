@@ -69,21 +69,15 @@ public class SearchActivity extends MainActivity {
 		
     	progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
     	
-    	listView.setOnScrollListener(new EndlessScrollListener());
+    	//listView.setOnScrollListener(new EndlessScrollListener());
     	
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id) {
-				Log.v("", parent.toString());
-            	Log.v("", ""+position);
-            	Log.v("", v.toString());
-            	Log.v("", ""+id);
-            	
+				
             	Tweet tweet = (Tweet) listAdapter.getItem(position);
             	MainActivity.db.addTweet(tweet);
-            	
-            	
-            	
+
             	View layout = getLayoutInflater().inflate(R.layout.toast_layout, (ViewGroup)findViewById(R.id.toast_layout_root));
             	TextView text = (TextView) layout.findViewById(R.id.text);
             	text.setText(R.string.added_favorites);
@@ -95,10 +89,8 @@ public class SearchActivity extends MainActivity {
             	toast.show();
             	//Toast.makeText(context, R.string.added_favorites, Toast.LENGTH_LONG).show();
 			}
-        });
-		
-    }
-    
+        });		
+    }    
     
     @Override
 	public void onBackPressed() {
@@ -110,8 +102,7 @@ public class SearchActivity extends MainActivity {
 	    super.startActivity(intent);
 	    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 	}
-	
-    
+	    
     @Override
     protected void onNewIntent(Intent intent) {
     	setIntent(intent);
@@ -137,11 +128,8 @@ public class SearchActivity extends MainActivity {
     	
 		return true;
     }
-	
-
-
-	public class EndlessScrollListener implements OnScrollListener {
-	
+    /*
+	public class EndlessScrollListener implements OnScrollListener {	
 	    private int visibleThreshold = 5;
 	    private int currentPage = 0;
 	    private int previousTotal = 0;
@@ -177,6 +165,6 @@ public class SearchActivity extends MainActivity {
 	    @Override
 	    public void onScrollStateChanged(AbsListView view, int scrollState) {
 	    }
-	}
+	}*/
 
 }

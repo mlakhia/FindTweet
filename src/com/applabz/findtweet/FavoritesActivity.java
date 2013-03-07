@@ -1,31 +1,21 @@
 package com.applabz.findtweet;
 
-import java.util.ArrayList;
-
-import com.applabz.findtweet.MainActivity.TweetComparator;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.DataSetObservable;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class FavoritesActivity extends MainActivity {
 
 	private ListAdapter listAdapter;
 	private ListView listView;
+	private DataSetObservable DSO_FA = new DataSetObservable();
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,18 +26,19 @@ public class FavoritesActivity extends MainActivity {
 	    actionBar.setTitle(R.string.title_favorites);
 	    
 	    
-	    listAdapter = new DBArrayAdapter(this, R.layout.list_tweet, MainActivity.db.getAllTweets());
+	    listAdapter = new DBArrayAdapter(this, R.layout.list_tweet, db.getAllTweets());
 		listView = (ListView)findViewById(R.id.listView);
 		listView.setAdapter(listAdapter);		    
-			
-	        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView parent, View v, int position, long id) {
-					confirmDeleteTweet((Tweet) listAdapter.getItem(position));
-				}
-	        });
-	        
-	    
+		
+        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView parent, View v, int position, long id) {
+				confirmDeleteTweet((Tweet) listAdapter.getItem(position));
+			}
+        });
+        
+        DSO_FA.registerObserver( ((DBArrayAdapter) listAdapter).getDataSetObserver() );
+		db.setObservers(DSO_FA);		
 	}
 	
 
