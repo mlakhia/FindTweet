@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
         
         
         TextView tvWelcome = (TextView) findViewById(R.id.welcome);
-        
+        /*
         tvWelcome.setOnTouchListener(new View.OnTouchListener () {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
 				return true;
 			}
         });
-        
+        */
         
 	}
 	
@@ -153,6 +153,9 @@ public class MainActivity extends Activity {
 				return internetReady();		
 			case R.id.menu_favorites:
 				goSaved();
+				return true;
+			case R.id.menu_settings:
+				goSettings();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -219,7 +222,10 @@ public class MainActivity extends Activity {
     	//overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
 	}
 	
-	
+	public void goSettings(){
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	startActivity(intent);
+	}
 	
 	@Override
 	public void onBackPressed() {

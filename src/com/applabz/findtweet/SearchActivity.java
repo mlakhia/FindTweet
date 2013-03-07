@@ -13,6 +13,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
@@ -66,6 +68,8 @@ public class SearchActivity extends MainActivity {
 		TS.setObservers(DSO_SA);		
 		
     	progressDialog = ProgressDialog.show(this, "", this.getString(R.string.loading));
+    	
+    	listView.setOnScrollListener(new EndlessScrollListener());
     	
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
 			@Override
@@ -134,4 +138,45 @@ public class SearchActivity extends MainActivity {
 		return true;
     }
 	
+
+
+	public class EndlessScrollListener implements OnScrollListener {
+	
+	    private int visibleThreshold = 5;
+	    private int currentPage = 0;
+	    private int previousTotal = 0;
+	    private boolean loading = true;
+	
+	    public EndlessScrollListener() {
+	    }
+	    public EndlessScrollListener(int visibleThreshold) {
+	        this.visibleThreshold = visibleThreshold;
+	    }
+	
+	    @Override
+	    public void onScroll(AbsListView view, int firstVisibleItem,
+	            int visibleItemCount, int totalItemCount) {
+	        if (loading) {
+	            if (totalItemCount > previousTotal) {
+	                loading = false;
+	                previousTotal = totalItemCount;
+	                currentPage++;
+	            }
+	        }
+	        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+	            // I load the next page of gigs using a background task,
+	            // but you can call any function here.
+	            //new LoadGigsTask().execute(currentPage + 1);
+	            
+	        	TS.refresh();
+	        	
+	        	loading = true;
+	        }
+	    }
+	
+	    @Override
+	    public void onScrollStateChanged(AbsListView view, int scrollState) {
+	    }
+	}
+
 }

@@ -50,7 +50,7 @@ public class TwitterSource {
 	
 	/* API 1.0 */
 	final private static String BASE_URL = "http://search.twitter.com/search.json";
-	final private static String DEFAULT_PARAMS = "&rpp=100&include_entities=true&result_type=mixed";
+	final private static String DEFAULT_PARAMS = "&rpp=40&include_entities=true&result_type=mixed";
 	
 	/* API 1.1 - requires OAuth */
 	/*
@@ -66,6 +66,8 @@ public class TwitterSource {
 	
 	private Comparator<Tweet> comparer;
 	private long[] ids;
+	
+	private String next = null;
 	
 	/**
 	 * Create a twitter source by supplying a search string and a comparator. It will initiate an immediate {@link #refresh()}
@@ -177,10 +179,15 @@ public class TwitterSource {
 	private boolean fetchTweets() {
 		
 		String queryUrl;
-		try {
-			queryUrl = "?q=" + URLEncoder.encode(search, "UTF-8")  +  DEFAULT_PARAMS;
-		} catch (UnsupportedEncodingException e) {
-			return false;
+		
+		if(next != null){
+			queryUrl = this.next;
+		}else{
+			try {
+				queryUrl = "?q=" + URLEncoder.encode(search, "UTF-8")  +  DEFAULT_PARAMS;
+			} catch (UnsupportedEncodingException e) {
+				return false;
+			}
 		}
 		
 		InputStream is = null;
@@ -253,6 +260,7 @@ public class TwitterSource {
 		try {	
 			JSONObject results = new JSONObject(new JSONTokener(json));
 			JSONArray tweetsRaw = results.getJSONArray("results");
+			this.next = results.getString("next_page");
 					
 			for(int i=0; i<tweetsRaw.length(); i++) {
 				try {

@@ -35,8 +35,8 @@ public class ListArrayAdapter extends ArrayAdapter<Tweet> implements ListAdapter
 		observer = new DataSetObserver() {  
 			@Override  
 			public void onChanged() {  
-				//notifyDataSetChanged();
 				updateData();
+				notifyDataSetChanged();
 			}
 		};		
 	}

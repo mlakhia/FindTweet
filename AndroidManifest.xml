@@ -38,6 +38,15 @@
 
 		    </intent-filter>
 		</activity>
+		
+        <activity 
+            android:name=".SettingssActivity"            
+            android:label="@string/title_settings"
+            android:launchMode="singleTop">
+		    <intent-filter>
+
+		    </intent-filter>
+		</activity>
         
         <activity 
             android:name=".SearchActivity"            
